@@ -1,5 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
+from .consts import ITEM_PER_PAGE
 from django.shortcuts import render, redirect
 from django.db.models import Avg
 
@@ -19,6 +21,7 @@ from .models import Book, Review
 class ListBookView(LoginRequiredMixin, ListView):
     template_name = "book/book_list.html"
     model = Book
+    paginate_by = ITEM_PER_PAGE
 
 
 class DetailBookView(LoginRequiredMixin, DetailView):
@@ -72,10 +75,15 @@ def index_view(request):
     ranking_list = Book.objects.annotate(avg_rating=Avg("review__rate")).order_by(
         "-avg_rating"
     )
+    paginator = Paginator(ranking_list, ITEM_PER_PAGE)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.page(page_number)
+
+    
     return render(
         request,
         "book/index.html",
-        {"object_list": object_list, "ranking_list": ranking_list},
+        {"object_list": object_list, "ranking_list": ranking_list, "page_obj" :page_obj},
     )
 
 
