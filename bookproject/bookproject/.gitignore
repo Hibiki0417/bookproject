@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+
+venv/
+
+db.sqlight3
+
+.vscode/
+
+.DS_Store
+Thumbs.db
